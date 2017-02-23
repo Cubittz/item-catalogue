@@ -17,7 +17,8 @@ def categoryList():
     for cat in categories:
         rows = session.query(Item).filter_by(category_id=cat.id).count()
         cat.rows = rows
-    return render_template('home.html', categories = categories)
+    items = session.query(Item).all()
+    return render_template('home.html', categories = categories, items=items)
 
 @app.route('/category/<int:category_id>')
 def itemList(category_id):

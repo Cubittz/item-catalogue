@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+        <div class="col-md-4 category-list">
         {% if categories %}
             {% for category in categories %}
                 <a href="{{url_for('itemList', category_id=category.id)}}">{{category.name}}({{category.rows}})</a>
@@ -7,4 +8,14 @@
         {% else %}
             <p>No Categories found</p>
         {% endif %}
+        </div>
+        <div class="col-md-8 item-list">
+        {% if items %}
+            {% for item in items %}
+                <a href="{{url_for('itemList', category_id=category.id)}}">{{item.name}}({{item.category.name}})</a>
+            {% endfor %}
+        {% else %}
+            <p>No items found</p>
+        {% endif %}
+        </div>
 {% endblock %}
