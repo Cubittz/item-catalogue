@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{item.name}}</h1>
+    <form>
+        <a href="/" class="btn btn-primary">Return to Home</a>
+        <a href="{{url_for('deleteItem', category_id=category.id, item_id=item.id)}}">Delete Item</a>
+    </form>
+{% endblock %}

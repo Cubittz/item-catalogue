@@ -1,18 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
         <div class="col-md-4 category-list">
+            <h1 class="category-title">Categories</h1>
         {% if categories %}
+            <ul>
             {% for category in categories %}
-                <a href="{{url_for('itemList', category_id=category.id)}}">{{category.name}}({{category.rows}})</a>
+                <li>
+                    <a href="{{url_for('itemList', category_id=category.id)}}">{{category.name}}({{category.rows}})</a>
+                </li>
             {% endfor %}
+            </ul>
         {% else %}
             <p>No Categories found</p>
         {% endif %}
         </div>
-        <div class="col-md-8 item-list">
+        <div class="col-md-7 item-list">
+            <h1 class="item-title">Recently Added Items</h1>
         {% if items %}
             {% for item in items %}
-                <a href="{{url_for('itemList', category_id=category.id)}}">{{item.name}}({{item.category.name}})</a>
+                <a href="{{url_for('viewItem',category_id=item.category_id, item_id=item.id)}}">
+                    <div class="col-md-4">
+                        <div class="panel">
+                        <div class="panel-header">{{item.name}}({{item.category.name}})</div>
+                        <div class="panel-body">{{item.description}}</div>
+                        <div class="panel-footer">{{item.price}}</div>
+                        </div>
+                    </div>
+                </a>
             {% endfor %}
         {% else %}
             <p>No items found</p>

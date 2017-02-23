@@ -51,6 +51,22 @@ def newItem(category_id):
     else:
         return render_template('newItem.html', category=category)
 
+@app.route('/category/<int:category_id>/view/<int:item_id>')
+def viewItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('viewItem.html', category=category, item=item)
+
+@app.route('/category/<int:category_id>/delete/<int:item_id>', methods=['GET','POST'])
+def deleteItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    if request.method=='POST':
+        session.delete(item)
+        session.commit()
+    else:
+        return render_template('deleteItem.html', category=category, item=item)
+
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True

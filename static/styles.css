@@ -1,8 +1,20 @@
+html,
+body {
+    height: 100vh;
+}
 .category-list {
     border: 1px solid black;
-    height: 80%;
+    margin: 20px;
+    height: calc(100vh - 145px);
 }
 .item-list {
     border: 1px solid black;
-    height: 80%;
+    margin: 20px;
+    height: calc(100vh - 145px);
+}
+.item-list .panel {
+    border: 1px solid #aaaaaa;
+}
+.item-list .panel-header {
+    background-color: #ccc
 }

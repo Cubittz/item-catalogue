@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="post" action="{{url_for('deleteItem', category_id=category.id, item_id=item.id)}}">
+        <input type="submit" class="btn btn-danger" value="Delete">
+    </form>
+{% endblock %}

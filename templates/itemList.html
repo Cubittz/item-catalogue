@@ -4,9 +4,12 @@
     <div>{{category.description}}</div>
     <a class="btn btn-primary" href="{{url_for('newItem',category_id=category.id)}}">Add New Item</a>
     {% for item in items %}
-        {{item.name}}
-        {{item.description}}
-        {{item.price}}
-        {{item.date_added}}
+        <div class="col-md-4 item-list">
+            <div class="panel">
+                <div class="panel-header">{{item.name}}({{item.category.name}})</div>
+                <div class="panel-body">{{item.description}}</div>
+                <div class="panel-footer">{{item.price}}</div>
+            </div>
+        </div>
     {% endfor %}
 {% endblock %}
