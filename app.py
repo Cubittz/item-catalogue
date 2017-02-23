@@ -19,6 +19,17 @@ def categoryList():
         cat.rows = rows
     return render_template('home.html', categories = categories)
 
+@app.route('/category/new', methods=['GET','POST]'])
+def newCategory():
+    if request.method='POST':
+        newCategory = Category(name=request.form['name'], description=request.form['description'])
+        session.add(newCategory)
+        session.commit()
+        flash("New Category Added!")
+        return redirect('/')
+    else:
+        return render_template('newCategory.html')
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
