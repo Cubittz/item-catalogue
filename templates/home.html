@@ -2,7 +2,7 @@
 {% block content %}
         {% if categories %}
             {% for category in categories %}
-                {{category.name}}({{category.rows}})
+                <a href="{{url_for('itemList', category_id=category.id)}}">{{category.name}}({{category.rows}})</a>
             {% endfor %}
         {% else %}
             <p>No Categories found</p>

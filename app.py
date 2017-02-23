@@ -19,9 +19,15 @@ def categoryList():
         cat.rows = rows
     return render_template('home.html', categories = categories)
 
-@app.route('/category/new', methods=['GET','POST]'])
+@app.route('/category/<int:category_id>')
+def itemList(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Item).filter_by(category_id=category_id).all()
+    return render_template('itemList.html', category=category, items=items)
+
+@app.route('/category/new', methods=['GET','POST'])
 def newCategory():
-    if request.method='POST':
+    if request.method=='POST':
         newCategory = Category(name=request.form['name'], description=request.form['description'])
         session.add(newCategory)
         session.commit()
@@ -30,6 +36,19 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
+@app.route('/category/<int:category_id>/new', methods=['GET','POST'])
+def newItem(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    if request.method=='POST':
+        newItemName = request.form['name']
+        newItemDescription = request.form['description']
+        newItemPrice = request.form['price']
+        newItem = Item(name=newItemName, description=newItemDescription, price=newItemPrice, category_id=category_id)
+        session.add(newItem)
+        session.commit()
+        return redirect('/')
+    else:
+        return render_template('newItem.html', category=category)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

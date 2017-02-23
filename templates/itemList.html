@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <div>{{category.name}}</div>
+    <div>{{category.description}}</div>
+    <a class="btn btn-primary" href="{{url_for('newItem',category_id=category.id)}}">Add New Item</a>
+    {% for item in items %}
+        {{item.name}}
+        {{item.description}}
+        {{item.price}}
+        {{item.date_added}}
+    {% endfor %}
+{% endblock %}
