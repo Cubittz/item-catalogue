@@ -1,6 +1,6 @@
 import sys
 
-from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -26,6 +26,7 @@ class Item(Base):
     name = Column(String(80), nullable = False)
     description = Column(String(250))
     price = Column(String(8))
+    date_added = Column(DateTime(timezone=True), server_default=func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
 
@@ -35,7 +36,8 @@ class Item(Base):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'price': self.price
+            'price': self.price,
+            'date_added': self.date_added
         }
 
 engine = create_engine('sqlite:///itemcatalog.db')

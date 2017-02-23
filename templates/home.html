@@ -2,7 +2,7 @@
 {% block content %}
         {% if categories %}
             {% for category in categories %}
-                {{category.name}}
+                {{category.name}}({{category.rows}})
             {% endfor %}
         {% else %}
             <p>No Categories found</p>
