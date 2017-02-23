@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+        {% if categories %}
+            {% for category in categories %}
+                {{category.name}}
+            {% endfor %}
+        {% else %}
+            <p>No Categories found</p>
+        {% endif %}
+{% endblock %}
