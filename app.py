@@ -14,7 +14,7 @@ session = DBSession()
 @app.route('/')
 def categoryList():
     categories = session.query(Category).all()
-    foreach (cat in categories):
+    for cat in categories:
         rows = session.query(Item).filter_by(category_id=cat.id).count()
         cat.rows = rows
     return render_template('home.html', categories = categories)
