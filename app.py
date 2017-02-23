@@ -20,12 +20,6 @@ def categoryList():
     items = session.query(Item).all()
     return render_template('home.html', categories = categories, items=items)
 
-@app.route('/category/<int:category_id>')
-def itemList(category_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(Item).filter_by(category_id=category_id).all()
-    return render_template('itemList.html', category=category, items=items)
-
 @app.route('/category/new', methods=['GET','POST'])
 def newCategory():
     if request.method=='POST':
@@ -36,6 +30,31 @@ def newCategory():
         return redirect('/')
     else:
         return render_template('newCategory.html')
+
+@app.route('category/<int:category_id>/edit', methods=['GET','POST'])
+def editCategory(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    if request.method=='POST':
+        category.name = request.form['name']
+        category.description = request.form['description']
+        session.add(category)
+        session.commit()
+        flash("Category Updated!")
+        return redirect('/')
+    else:
+        return render_template('editCategory.html', category=category)
+
+@app.route('/category/<int:category_id>')
+def itemList(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Item).filter_by(category_id=category_id).all()
+    return render_template('itemList.html', category=category, items=items)
+
+@app.route('/category/<int:category_id>/view/<int:item_id>')
+def viewItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('viewItem.html', category=category, item=item)
 
 @app.route('/category/<int:category_id>/new', methods=['GET','POST'])
 def newItem(category_id):
@@ -50,12 +69,6 @@ def newItem(category_id):
         return redirect('/')
     else:
         return render_template('newItem.html', category=category)
-
-@app.route('/category/<int:category_id>/view/<int:item_id>')
-def viewItem(category_id, item_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    item = session.query(Item).filter_by(id=item_id).one()
-    return render_template('viewItem.html', category=category, item=item)
 
 @app.route('/category/<int:category_id>/delete/<int:item_id>', methods=['GET','POST'])
 def deleteItem(category_id, item_id):

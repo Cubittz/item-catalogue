@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Add New Category</h1>
-    <form method="post" action="/category/new">
+    <h1>Edit Category: {{category.name}}</h1>
+    <form method="post" action="{{url_for('editCategory',category_id=category.id)}}">
         <div class="form-group">
             <label for="name" class="control-label">Category Name</label>
-            <input placeholder="Category Name" type="text" class="form-control" name="name">
+            <input value="{{category.name}}" type="text" class="form-control" name="name">
         </div>
         <div class="form-group">
             <label for="description" class="control-label">Category Description</label>
-            <textarea placeholder="Description" type="text" class="form-control" name="description"></textarea>
+            <textarea type="text" class="form-control" name="description">{{category.description}}</textarea>
         </div>
         <div class="form-group">
-            <input type="submit" value="Add" class="btn btn-success">
+            <input type="submit" value="Update" class="btn btn-success">
             <a href="/" class="btn btn-danger">Cancel</a>
         </div>
     </form>
