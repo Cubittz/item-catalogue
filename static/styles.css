@@ -4,17 +4,26 @@ body {
 }
 .category-list {
     border: 1px solid black;
+    border-radius: 15px;
     margin: 20px;
     height: calc(100vh - 145px);
 }
 .item-list {
     border: 1px solid black;
+    border-radius: 15px;
     margin: 20px;
     height: calc(100vh - 145px);
+    padding-top: 15px;
+}
+.item-list>h1 {
+    margin-top: 0;
 }
 .item-list .panel {
     border: 1px solid #aaaaaa;
 }
 .item-list .panel-header {
     background-color: #ccc
+}
+.panel-body {
+    height: 100px;
 }

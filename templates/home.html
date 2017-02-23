@@ -15,7 +15,7 @@
         {% endif %}
         </div>
         <div class="col-md-7 item-list">
-            <h1 class="item-title">Recently Added Items</h1>
+            <h1 class="item-title">Just In...</h1>
         {% if items %}
             {% for item in items %}
                 <a href="{{url_for('viewItem',category_id=item.category_id, item_id=item.id)}}">

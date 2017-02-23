@@ -17,7 +17,7 @@ def categoryList():
     for cat in categories:
         rows = session.query(Item).filter_by(category_id=cat.id).count()
         cat.rows = rows
-    items = session.query(Item).all()
+    items = session.query(Item).limit(6).all()
     return render_template('home.html', categories = categories, items=items)
 
 @app.route('/category/new', methods=['GET','POST'])
@@ -31,7 +31,7 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
-@app.route('category/<int:category_id>/edit', methods=['GET','POST'])
+@app.route('/category/<int:category_id>/edit', methods=['GET','POST'])
 def editCategory(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method=='POST':
@@ -66,9 +66,23 @@ def newItem(category_id):
         newItem = Item(name=newItemName, description=newItemDescription, price=newItemPrice, category_id=category_id)
         session.add(newItem)
         session.commit()
-        return redirect('/')
+        return redirect(url_for('viewItem', category_id=category.id, item_id=newItem.id))
     else:
         return render_template('newItem.html', category=category)
+
+@app.route('/category/<int:category_id>/edit/<int:item_id>', methods=['GET','POST'])
+def editItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    if request.method=='POST':
+        item.name = request.form['name']
+        item.description = request.form['description']
+        item.price = request.form['price']
+        session.add(item)
+        session.commit()
+        return redirect(url_for('viewItem', category_id=category.id, item_id=item.id))
+    else:
+        return render_template('editItem.html', category=category, item=item)
 
 @app.route('/category/<int:category_id>/delete/<int:item_id>', methods=['GET','POST'])
 def deleteItem(category_id, item_id):
@@ -77,6 +91,7 @@ def deleteItem(category_id, item_id):
     if request.method=='POST':
         session.delete(item)
         session.commit()
+        return redirect(url_for('itemList', category_id=category.id))
     else:
         return render_template('deleteItem.html', category=category, item=item)
 
