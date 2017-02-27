@@ -1,29 +1,78 @@
 html,
 body {
     height: 100vh;
+    color: #8E1459;
 }
+
+.navbar-inverse {
+    background-color: #8E1459;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #E99EC8;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #E99EC8;
+}
+
+.category {
+    font-style: italic;
+    color: #E99EC8;
+}
+
 .category-list {
-    border: 1px solid black;
+    border: 1px solid #8E1459;
     border-radius: 15px;
     margin: 20px;
-    height: calc(100vh - 145px);
+    height: calc(80vh);
 }
+
 .item-list {
-    border: 1px solid black;
+    border: 1px solid #8E1459;
     border-radius: 15px;
     margin: 20px;
-    height: calc(100vh - 145px);
-    padding-top: 15px;
+    height: calc(80vh);
 }
-.item-list>h1 {
-    margin-top: 0;
+
+.items {
+    margin-top: 20px;
 }
-.item-list .panel {
-    border: 1px solid #aaaaaa;
+
+.panel {
+    border: 1px solid #8E1459;
 }
-.item-list .panel-header {
-    background-color: #ccc
+
+.panel-header {
+    padding: 10px;
+    background-color: #C2498D;
+    color: #FFFFFF;
 }
+
+ a:hover .panel-header {
+    background-color: #E99EC8;
+    color: #C2498D;
+}
+
 .panel-body {
-    height: 100px;
+    height: 20vh;
+}
+
+.panel-footer {
+    background-color: #AE2b75;
+    color: #E99EC8;
+}
+
+.btn-success {
+    background-color: #C2498D;
+    border-color: #AE2B75;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active
+ {
+    background-color: #8E1459;
+    border-color: #AE2B75;
 }

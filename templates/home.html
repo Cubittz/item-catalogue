@@ -21,7 +21,7 @@
                 <a href="{{url_for('viewItem',category_id=item.category_id, item_id=item.id)}}">
                     <div class="col-md-4">
                         <div class="panel">
-                        <div class="panel-header">{{item.name}}({{item.category.name}})</div>
+                        <div class="panel-header">{{item.name}} <span class="category">({{item.category.name}})<span></div>
                         <div class="panel-body">{{item.description}}</div>
                         <div class="panel-footer">{{item.price}}</div>
                         </div>

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
+    <a href="/" class="btn btn-success">Return to Home</a>
     <h1>{{category.name}}</h1>
     <p>{{category.description}}</p>
     <div>
         <a class="btn btn-danger" href="{{url_for('editCategory', category_id=category.id)}}">Edit Category</a>
         <a class="btn btn-primary" href="{{url_for('newItem',category_id=category.id)}}">Add New Item</a>
     </div>
-    <div class="item-list">
+    <div class="row items">
     {% for item in items %}
     <a href="{{url_for('viewItem',category_id=item.category_id, item_id=item.id)}}">
         <div class="col-md-4">
