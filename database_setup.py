@@ -11,6 +11,8 @@ class Category(Base):
     id = Column(Integer, primary_key = True)
     name = Column(String(80), nullable = False)
     description = Column(String(250))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -29,6 +31,8 @@ class Item(Base):
     date_added = Column(DateTime(timezone=True), server_default=func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -39,6 +43,13 @@ class Item(Base):
             'price': self.price,
             'date_added': self.date_added
         }
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key = True)
+    name = Column(String(80), nullable = False)
+    email = Column(string(150), nullable = False)
+    picture = Column(string(250))
 
 engine = create_engine('sqlite:///itemcatalog.db')
 
