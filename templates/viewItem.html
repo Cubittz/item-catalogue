@@ -1,12 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
     <a href="/" class="btn btn-success">Return to Home</a>
-    <h1>{{item.name}}</h1>
+    <div>
+        <h1>{{item.name}}</h1>
+    </div>
+    <p>{{category.description}}</p>
     <p>{{item.price}}</p>
     <p>{{item.description}}</p>
     <p>Date Added: {{item.date_added.strftime('%d %b %Y  %H:%M')}}</p>
+    <figure class="creator">
+		    <img class="user-picture" src="{{ creator.picture}}">
+		    <figcaption>Added by: {{ creator.name }}</figcaption>
+	    </figure>
+    {% if item.user_id == logged_in_user_id %}
     <form>
         <a class="btn btn-primary" href="{{url_for('editItem', category_id=category.id, item_id=item.id)}}">Edit Item</a>
         <a class="btn btn-danger" href="{{url_for('deleteItem', category_id=category.id, item_id=item.id)}}">Delete Item</a>
     </form>
+    {% endif %}
 {% endblock %}

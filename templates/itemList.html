@@ -2,11 +2,17 @@
 {% block content %}
     <a href="/" class="btn btn-success">Return to Home</a>
     <h1>{{category.name}}</h1>
+    <figure class="creator">
+		<img class="user-picture" src="{{ creator.picture}}">
+		<figcaption>{{ creator.name }}</figcaption>
+	</figure>
     <p>{{category.description}}</p>
+    {% if category.user_id == logged_in_user_id %}
     <div>
         <a class="btn btn-danger" href="{{url_for('editCategory', category_id=category.id)}}">Edit Category</a>
         <a class="btn btn-primary" href="{{url_for('newItem',category_id=category.id)}}">Add New Item</a>
     </div>
+    {% endif %}
     <div class="row items">
     {% for item in items %}
     <a href="{{url_for('viewItem',category_id=item.category_id, item_id=item.id)}}">

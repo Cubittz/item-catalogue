@@ -6,6 +6,15 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key = True)
+    name = Column(String(80), nullable = False)
+    email = Column(String(150), nullable = False)
+    picture = Column(String(250))
+
+
 class Category(Base):
     __tablename__ = 'category'
     id = Column(Integer, primary_key = True)
@@ -44,13 +53,6 @@ class Item(Base):
             'date_added': self.date_added
         }
 
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key = True)
-    name = Column(String(80), nullable = False)
-    email = Column(string(150), nullable = False)
-    picture = Column(string(250))
-
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('sqlite:///itemcatalogwithusers.db')
 
 Base.metadata.create_all(engine)

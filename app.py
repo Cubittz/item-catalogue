@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 
 from flask import session as login_session
 import random, string
@@ -17,7 +17,7 @@ import requests
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('sqlite:///itemcatalogwithusers.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
@@ -101,6 +101,11 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -153,7 +158,7 @@ def newCategory():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method=='POST':
-        newCategory = Category(name=request.form['name'], description=request.form['description'])
+        newCategory = Category(name=request.form['name'], description=request.form['description'], user_id = login_session['user_id'])
         session.add(newCategory)
         session.commit()
         flash("New Category Added!")
@@ -166,6 +171,9 @@ def editCategory(category_id):
     if 'username' not in login_session:
         return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
+    if category.user_id != login_session['user_id']:
+        flash("You are not authorized to edit this record.")
+        return redirect(url_for('itemList', category_id=category.id))
     if request.method=='POST':
         category.name = request.form['name']
         category.description = request.form['description']
@@ -180,13 +188,23 @@ def editCategory(category_id):
 def itemList(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
-    return render_template('itemList.html', category=category, items=items)
+    creator = getUserInfo(category.user_id)
+    if 'username' in login_session:
+        logged_in_user_id = login_session['user_id']
+    else:
+        logged_in_user_id = 0
+    return render_template('itemList.html', category=category, items=items, creator = creator, logged_in_user_id=logged_in_user_id)
 
 @app.route('/category/<int:category_id>/view/<int:item_id>')
 def viewItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
-    return render_template('viewItem.html', category=category, item=item)
+    creator = getUserInfo(item.user_id)
+    if 'username' in login_session:
+        logged_in_user_id = login_session['user_id']
+    else:
+        logged_in_user_id = 0
+    return render_template('viewItem.html', category=category, item=item, creator = creator, logged_in_user_id = logged_in_user_id)
 
 @app.route('/category/<int:category_id>/new', methods=['GET','POST'])
 def newItem(category_id):
@@ -197,7 +215,8 @@ def newItem(category_id):
         newItemName = request.form['name']
         newItemDescription = request.form['description']
         newItemPrice = request.form['price']
-        newItem = Item(name=newItemName, description=newItemDescription, price=newItemPrice, category_id=category_id)
+        newItem = Item(name=newItemName, description=newItemDescription, price=newItemPrice
+            , category_id=category_id, user_id = login_session['user_id'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('viewItem', category_id=category.id, item_id=newItem.id))
@@ -210,6 +229,9 @@ def editItem(category_id, item_id):
         return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
+    if item.user_id != login_session['user_id']:
+        flash("You are not authorized to edit this record.")
+        return redirect(url_for('viewItem', category_id=category.id, item_id=newItem.id))
     if request.method=='POST':
         item.name = request.form['name']
         item.description = request.form['description']
@@ -226,12 +248,34 @@ def deleteItem(category_id, item_id):
         return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
+    if item.user_id != login_session['user_id']:
+        flash("You are not authorized to delete this record.")
+        return redirect(url_for('viewItem', category_id=category.id, item_id=newItem.id))
     if request.method=='POST':
         session.delete(item)
         session.commit()
         return redirect(url_for('itemList', category_id=category.id))
     else:
         return render_template('deleteItem.html', category=category, item=item)
+
+def getUserID(email):
+    try: 
+        user = session.query(User).filter_by(email = email).one()
+        return user.id
+    except:
+        return None
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id = user_id).one()
+    return user
+
+def createUser(login_session):
+    newUser = User(name = login_session['username'], email = login_session['email'], picture = login_session['picture'])
+    session.add(newUser)
+    session.commit()
+
+    user = session.query(User).filter_by(email = login_session['email']).one()
+    return user.id
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
