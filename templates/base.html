@@ -32,6 +32,11 @@
                             Add Category</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        {% if 'username' not in session %}
+                            <li><a href="{{url_for('showLogin')}}">Click Here to Log in</a></li>
+                        {% else %}
+                            <li><a href="{{url_for('disconnect')}}">Disconnect</a></li>
+                        {% endif %}
                         <li><a href="{{welcome}}">{{ welcome_message }}</a></li>
                         <li class="menu-item">|</li>
                         <li><a href='{{loginout}}'>{{ loginout_message }}</a></li>
