@@ -35,30 +35,28 @@
                         {% if 'username' not in session %}
                             <li><a href="{{url_for('showLogin')}}">Click Here to Log in</a></li>
                         {% else %}
-                            <li><a href="{{url_for('disconnect')}}">Disconnect</a></li>
+                            <li class="menu-item"><img class="menu-picture" src="{{session['picture']}}"></li>
+                            <li class="menu-item">{{session['username']}}</li>
+                            <li class="menu-item">|</li>
+                            <li><a href="{{url_for('disconnect')}}">Log Out</a></li>
                         {% endif %}
-                        <li><a href="{{welcome}}">{{ welcome_message }}</a></li>
-                        <li class="menu-item">|</li>
-                        <li><a href='{{loginout}}'>{{ loginout_message }}</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="container-fluid catalog">
-            <div class = 'flash'>
 		    {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                <ul>
-                {% for message in messages %}
-                    <li> <strong> {{ message }} </strong> </li>
-                {% endfor %}
-                </ul>
+                <div class = 'alert alert-success'>
+                    <ul>
+                    {% for message in messages %}
+                        <li> <strong> {{ message }} </strong> </li>
+                    {% endfor %}
+                    </ul>
+                </div>
                 {% endif %}
             {% endwith %}
-            </div>
             {% block content %}
-            {% endblock %}
-            {% block javascript %}
             {% endblock %}
         </div>
     </body>

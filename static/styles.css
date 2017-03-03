@@ -16,6 +16,21 @@ body {
     color: #E99EC8;
 }
 
+.menu-item {
+    color: #E99EC8;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 10px;
+}
+
+.menu-picture {
+    width: 25px;
+    height: 25px;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+}
+
 .category {
     font-style: italic;
     color: #E99EC8;
@@ -91,9 +106,16 @@ body {
 }
 
 .user-picture {
-    width: 50px; 
+    width: 50px;
     height: 50px;
     border-radius: 50px;
-    -webkit-border-radius: 150px;
-    -moz-border-radius: 150px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+}
+
+.login {
+    margin-top: 50px;
+    border: 1px solid #8E1459;
+    border-radius: 10px;
+    height: 300px;
 }
