@@ -344,7 +344,8 @@ def deleteItem(category_id, item_id):
 def ItemJson(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(category_id=category_id).all()
-    return jsonify(Item = [i.serialize for i in item])
+    return jsonify(Category = [category.serialize],
+        Item = [i.serialize for i in item])
 
 def getUserID(email):
     try:
