@@ -50,7 +50,7 @@ class Item(Base):
             'name': self.name,
             'description': self.description,
             'price': self.price,
-            'date_added': self.date_added
+            'date_added': str(self.date_added)
         }
 
 engine = create_engine('sqlite:///itemcatalogwithusers.db')

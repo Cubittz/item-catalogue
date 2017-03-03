@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,6 +13,9 @@ import httplib2
 import json
 from flask import make_response
 import requests
+from functools import wraps
+
+app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
@@ -22,6 +24,14 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/login')
 def showLogin():
@@ -55,7 +65,7 @@ def gconnect():
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+    result = json.loads(h.request(url, 'GET')[1].decode('utf8'))
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
@@ -88,7 +98,7 @@ def gconnect():
 
     # Store the access token in the session for later use.
     login_session['provider'] = 'google'
-    login_session['credentials'] = credentials
+    login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user info
@@ -113,7 +123,7 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '" style = "width: 200px; height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -125,7 +135,7 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    access_token = credentials.access_token
+    access_token = credentials
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -187,7 +197,7 @@ def fbconnect():
     token = result.split('&')[0]
     url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    result = h.request(url, 'GET')[1].decode('utf8')
     data = json.loads(result)
     login_session['provider'] = 'facebook'
     login_session['username'] = data['name']
@@ -226,11 +236,12 @@ def categoryList():
     return render_template('home.html', categories = categories, items=items)
 
 @app.route('/category/new', methods=['GET','POST'])
+@login_required
 def newCategory():
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method=='POST':
-        newCategory = Category(name=request.form['name'], description=request.form['description'], user_id = login_session['user_id'])
+        newCategory = Category(name=request.form['name'],
+            description=request.form['description'],
+            user_id = login_session['user_id'])
         session.add(newCategory)
         session.commit()
         flash("New Category Added!")
@@ -239,9 +250,8 @@ def newCategory():
         return render_template('newCategory.html')
 
 @app.route('/category/<int:category_id>/edit', methods=['GET','POST'])
+@login_required
 def editCategory(category_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     if category.user_id != login_session['user_id']:
         flash("You are not authorized to edit this record.")
@@ -265,7 +275,8 @@ def itemList(category_id):
         logged_in_user_id = login_session['user_id']
     else:
         logged_in_user_id = 0
-    return render_template('itemList.html', category=category, items=items, creator = creator, logged_in_user_id=logged_in_user_id)
+    return render_template('itemList.html', category=category, items=items,
+        creator = creator, logged_in_user_id=logged_in_user_id)
 
 @app.route('/category/<int:category_id>/view/<int:item_id>')
 def viewItem(category_id, item_id):
@@ -276,12 +287,12 @@ def viewItem(category_id, item_id):
         logged_in_user_id = login_session['user_id']
     else:
         logged_in_user_id = 0
-    return render_template('viewItem.html', category=category, item=item, creator = creator, logged_in_user_id = logged_in_user_id)
+    return render_template('viewItem.html', category=category, item=item,
+        creator = creator, logged_in_user_id = logged_in_user_id)
 
 @app.route('/category/<int:category_id>/new', methods=['GET','POST'])
+@login_required
 def newItem(category_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method=='POST':
         newItemName = request.form['name']
@@ -296,9 +307,8 @@ def newItem(category_id):
         return render_template('newItem.html', category=category)
 
 @app.route('/category/<int:category_id>/edit/<int:item_id>', methods=['GET','POST'])
+@login_required
 def editItem(category_id, item_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     if item.user_id != login_session['user_id']:
@@ -315,9 +325,8 @@ def editItem(category_id, item_id):
         return render_template('editItem.html', category=category, item=item)
 
 @app.route('/category/<int:category_id>/delete/<int:item_id>', methods=['GET','POST'])
+@login_required
 def deleteItem(category_id, item_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     if item.user_id != login_session['user_id']:
@@ -329,6 +338,13 @@ def deleteItem(category_id, item_id):
         return redirect(url_for('itemList', category_id=category.id))
     else:
         return render_template('deleteItem.html', category=category, item=item)
+
+#JSON endpoint return all items in a category
+@app.route('/category/<int:category_id>/JSON')
+def ItemJson(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(category_id=category_id).all()
+    return jsonify(Item = [i.serialize for i in item])
 
 def getUserID(email):
     try:
@@ -342,7 +358,8 @@ def getUserInfo(user_id):
     return user
 
 def createUser(login_session):
-    newUser = User(name = login_session['username'], email = login_session['email'], picture = login_session['picture'])
+    newUser = User(name = login_session['username'], email = login_session['email'],
+        picture = login_session['picture'])
     session.add(newUser)
     session.commit()
 
